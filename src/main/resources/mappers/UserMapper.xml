@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+
+    <resultMap id="userMap" type="User">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="passWord" column="pass_word"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO user(name, pass_word) values(#{name}, #{passWord});
+    </insert>
+
+    <select id="getAll" resultMap="userMap">
+        SELECT * FROM user;
+    </select>
+
+    <select id="getById" resultMap="userMap">
+        select * from user u where u.id=#{id};
+    </select>
+
+    <update id="update">
+        update user u set
+        u.name=#{name},
+        u.pass_word=#{passWord}
+        where u.id=#{id}
+    </update>
+
+    <delete id="delete">
+        delete from user where id=#{id};
+    </delete>
+
+    <select id="getByName" resultMap="userMap">
+        SELECT * FROM user where name=#{name};
+    </select>
+
+</mapper>
