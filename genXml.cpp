@@ -24,9 +24,15 @@ string getBig(string & small, bool big = false) {
 }
 int main(int argc, char * argv[]) {
 
-    cout << "//" << endl;
-    return 0;
-    ifstream fin(argv[0]);
+    // cout << "//" << endl;
+//   return 0;
+    string file = "C:\\Users\\Administrator\\Desktop\\sql\\a.txt";
+
+    if(argc > 1) {
+        file = argv[1];
+    }
+
+    ifstream fin(file);
     fin >> tableName;
     string str;
 
@@ -50,7 +56,7 @@ int main(int argc, char * argv[]) {
 
     fout << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << endl;
     fout << "<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\" >" << endl;
-    fout << "<mapper namespace=\"" << tableName << "\">" << endl;
+    fout << "<mapper namespace=\"" << getBig(tableName, true) << "\">" << endl;
     fout << endl;
 
     // table name
@@ -69,7 +75,7 @@ int main(int argc, char * argv[]) {
             fout << ",";
         }
 
-        if(i % 10 == 0) {
+        if(i % 10 == 9) {
             fout << endl;
         }
     }
@@ -79,7 +85,7 @@ int main(int argc, char * argv[]) {
     fout << endl;
 
     // so where clause
-    fout << "sql id=\"SO_Where_Clause\">" << endl;
+    fout << "<sql id=\"SO_Where_Clause\">" << endl;
 
     for(int i = 0; i < columnBig.size(); ++i) {
         fout << "<if test=\"" + columnBig[i] + "!=null\">" << endl;
@@ -98,12 +104,13 @@ int main(int argc, char * argv[]) {
     }
 
     fout << "</resultMap>" << endl;
+    fout << endl;
 
     fout << "<insert id=\"insert\">" << endl;
-    fout << "insert into " + tableName + "(" >> endl;
+    fout << "insert into " + tableName + "(" << endl;
 
     for(int i = 0; i < columnSmall.size(); ++i) {
-        fout << "<!-- " << i + 1 << columnSmall[i];
+        fout << "<!-- " << i + 1 << "-->" << columnSmall[i];
 
         if(i + 1 != columnSmall.size()) {
             fout << ",";
@@ -115,8 +122,8 @@ int main(int argc, char * argv[]) {
     fout << ")" << endl;
     fout << "values (" << endl;
 
-    for(int i = 0; i < columnBig.size(); +i) {
-        fout << "<!-- " << i + 1 << columnBig[i];
+    for(int i = 0; i < columnBig.size(); ++i) {
+        fout << "<!-- " << i + 1 << "-->" <<  columnBig[i];
 
         if(i + 1 != columnBig.size()) {
             fout << ",";
@@ -129,15 +136,15 @@ int main(int argc, char * argv[]) {
     fout << "</insert>" << endl;
     fout << endl;
 
-    fout << "<update id=\"update\"" << endl;
+    fout << "<update id=\"update\">" << endl;
     fout << "update" << endl;
     fout << "<include refid=\"Table_Name\"/>" << endl;
     fout << "set" << endl;
 
-    for(int i = 1; i < columnSmall[i].size(); ++i) {
-        fout << columnSmall[i] << "=#{" << columnBig[i] << "}" << endl;
+    for(int i = 1; i < columnSmall.size(); ++i) {
+        fout << columnSmall[i] << "=#{" << columnBig[i] << "}";
 
-        if(i + 1 != columnBig.size()) {
+        if(i + 1 != columnSmall.size()) {
             fout << ",";
         }
 
@@ -148,7 +155,14 @@ int main(int argc, char * argv[]) {
     fout << "</update>" << endl;
     fout << endl;
 
+    fout << "<select id=\"searchBySo\" resultMap=\"" + tableName + "ResultMap\">" << endl;
 
+    fout<<"select"<<endl;
+    fout<<"<include refid=\"Base_Column_List\"/>"<<endl;
+    fout<<"from "<<tableName<<" o"<<endl;
+    fout<<"where 1=1"<<endl;
+    fout<<"<include refid=\"" + getBig(tableName, true) + ".SO_Where_Clause\"/>"<<endl;
+    fout<<"</select>"<<endl;
 
     return 0;
 }
